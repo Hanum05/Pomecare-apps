@@ -998,6 +998,32 @@
             }
         }
 
+        // --- 11. Fitur Pre-Order via WhatsApp ---
+        function sendWhatsApp() {
+            // 1. Ambil data dari form
+            const name = document.getElementById('poName').value.trim();
+            const qty = document.getElementById('poQty').value;
+            const city = document.getElementById('poCity').value.trim();
+
+            // 2. Validasi apakah ada kolom yang kosong
+            if (!name || !qty || !city) {
+                showModal("Formulir Belum Lengkap", "Mohon isi Nama, Jumlah Box, dan Kota Pengiriman sebelum melanjutkan ke WhatsApp.", "warning");
+                return;
+            }
+
+            // 3. Susun pesan teks yang ramah dan informatif
+            const message = `Halo Tim Pomecare! 🍎\n\nSaya ingin melakukan Pre-Order produk *DENTANOVA* (Fortified Fruit Leather Delima).\n\nBerikut data pesanan saya:\n👤 Nama: *${name}*\n📦 Jumlah: *${qty} Box*\n📍 Kota Pengiriman: *${city}*\n\nMohon informasi lebih lanjut mengenai sistem _Pay as You Wish_ / Subsidi Silang. Terima kasih!`;
+
+            // 4. Encode pesan agar aman untuk URL (mengubah spasi menjadi %20, enter menjadi %0A, dll)
+            const encodedMessage = encodeURIComponent(message);
+
+            // 5. Buat link WhatsApp (Ubah awalan 0 menjadi kode negara 62)
+            const phoneNumber = "6281331965094"; 
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+
+            // 6. Buka di tab baru
+            window.open(whatsappUrl, '_blank');
+        }
 
         // Initialize on load
         window.onload = function() {
