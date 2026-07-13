@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomecare - Inovasi Fortified Fruit Leather Delima</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        /* Tema Ungu Custom */
+        .bg-pome-primary { background-color: #6B21A8; } /* Purple 800 */
+        .bg-pome-secondary { background-color: #9333EA; } /* Purple 600 */
+        .bg-pome-light { background-color: #F3E8FF; } /* Purple 100 */
+        .text-pome-primary { color: #6B21A8; }
+        .text-pome-secondary { color: #9333EA; }
+        .border-pome-primary { border-color: #6B21A8; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #9333EA; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6B21A8; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Simulator Canvas CSS */
+        #labCanvas {
+            background-color: #1a1a1a;
+            border-radius: 0.5rem;
+            cursor: crosshair;
+        }
+
+        /* Odontogram CSS */
+        .tooth-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #cbd5e1;
+            background: white;
+            color: #333;
+        }
+        .tooth-healthy { background: white; }
+        .tooth-decayed { background: #ef4444; color: white; border-color: #b91c1c; } /* d - merah */
+        .tooth-missing { background: #94a3b8; color: white; border-color: #475569; } /* m - abu-abu */
+        .tooth-filled { background: #3b82f6; color: white; border-color: #1d4ed8; }  /* f - biru */
+
+        /* Modal Custom Box */
+        .modal-box {
+            display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background-color: white; padding: 2rem; border-radius: 0.5rem; max-width: 400px; width: 90%;
+            text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-pome-primary text-white sticky top-0 z-40 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center font-bold text-xl tracking-wider">
+                    <i class="fas fa-pills mr-2 text-pink-300"></i> POMECARE
+                </div>
+                <div class="hidden md:flex space-x-4">
+                    <button onclick="switchTab('dashboard')" class="hover:text-pink-300 px-3 py-2 rounded-md transition">Dashboard</button>
+                    <button onclick="switchTab('features')" class="hover:text-pink-300 px-3 py-2 rounded-md transition">Fitur Interaktif</button>
+                    <button onclick="switchTab('education')" class="hover:text-pink-300 px-3 py-2 rounded-md transition">Edukasi & Jurnal</button>
+                    <button onclick="switchTab('preorder')" class="bg-pink-500 hover:bg-pink-600 px-4 py-2 rounded-full font-semibold transition shadow-lg">Pre-Order</button>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobileMenuBtn" class="text-white hover:text-pink-300 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-pome-secondary pb-4">
+            <button onclick="switchTab('dashboard'); toggleMobileMenu()" class="block w-full text-left px-4 py-2 hover:bg-pome-primary">Dashboard</button>
+            <button onclick="switchTab('features'); toggleMobileMenu()" class="block w-full text-left px-4 py-2 hover:bg-pome-primary">Fitur Interaktif</button>
+            <button onclick="switchTab('education'); toggleMobileMenu()" class="block w-full text-left px-4 py-2 hover:bg-pome-primary">Edukasi & Jurnal</button>
+            <button onclick="switchTab('preorder'); toggleMobileMenu()" class="block w-full text-left px-4 py-2 text-pink-300 font-bold">Pre-Order</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ==================== DASHBOARD TAB ==================== -->
+        <section id="dashboard" class="tab-content active">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-pome-primary mb-4 leading-tight">
+                    Inovasi Fortified Fruit Leather<br><span class="text-pink-500">Buah Delima</span> (Pomecare)
+                </h1>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-6">
+                    Pangan Fungsional Antibakteri <i>Streptococcus mutans</i> dalam Upaya <i>Hifdzun Nafs</i> melalui Pencegahan Karies Gigi Pediatrik.
+                </p>
+                <button onclick="switchTab('preorder')" class="bg-pome-secondary hover:bg-pome-primary text-white px-8 py-3 rounded-full font-bold text-lg shadow-xl transition transform hover:scale-105">
+                    Dapatkan Sekarang <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-pome-secondary text-center hover:shadow-lg transition">
+                    <div class="w-16 h-16 mx-auto bg-pome-light text-pome-primary rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fas fa-shield-virus"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2 text-gray-800">Antibakteri Aktif</h3>
+                    <p class="text-gray-600 text-sm">Menghambat pertumbuhan <i>S. mutans</i> penyebab utama karies gigi anak.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-pink-500 text-center hover:shadow-lg transition">
+                    <div class="w-16 h-16 mx-auto bg-pink-100 text-pink-500 rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2 text-gray-800">Pangan Fungsional</h3>
+                    <p class="text-gray-600 text-sm">Bentuk fruit leather yang disukai anak, kaya antioksidan dari ekstrak delima.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-pome-primary text-center hover:shadow-lg transition">
+                    <div class="w-16 h-16 mx-auto bg-pome-light text-pome-primary rounded-full flex items-center justify-center text-2xl mb-4">
+                        <i class="fas fa-praying-hands"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2 text-gray-800">Hifdzun Nafs</h3>
+                    <p class="text-gray-600 text-sm">Menjaga jiwa (kesehatan) sebagai implementasi nilai maqashid syariah.</p>
+                </div>
+            </div>
+            
+            <div class="bg-pome-light rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="md:w-1/2">
+                    <h2 class="text-3xl font-bold text-pome-primary mb-4">Mulai Perawatan Gigi Anak Anda</h2>
+                    <p class="text-gray-700 mb-6">Gunakan alat interaktif kami untuk memantau, mendidik, dan mencegah karies gigi sedini mungkin.</p>
+                    <button onclick="switchTab('features')" class="bg-white text-pome-secondary font-semibold border-2 border-pome-secondary px-6 py-2 rounded-lg hover:bg-pome-secondary hover:text-white transition">
+                        Eksplorasi Fitur
+                    </button>
+                </div>
+                <div class="md:w-1/2 flex justify-center w-full">
+                    <img src="Ilustrasi Pomcare Kids.png" 
+                         alt="Ilustrasi Pomecare Kids" 
+                         class="w-full h-auto max-w-md object-contain rounded-xl shadow-lg border-4 border-white transition-transform hover:scale-105" 
+                         onerror="this.onerror=null; this.src='https://placehold.co/600x400/e9d5ff/6b21a8?text=Ilustrasi+Pomecare+Kids';">
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== FITUR INTERAKTIF TAB ==================== -->
+        <section id="features" class="tab-content">
+            <h2 class="text-3xl font-bold text-center text-pome-primary mb-10">Pusat Kendali Kesehatan Gigi (Pome-Hub)</h2>
+            
+            <div class="grid lg:grid-cols-2 gap-8">
+                
+                <!-- Fitur 1: Skrining Karies Gigi Pediatrik -->
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-pome-secondary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Fitur 1</div>
+                    <h3 class="text-xl font-bold text-pome-primary mb-4 border-b pb-2"><i class="fas fa-clipboard-check mr-2"></i> Skrining Karies Gigi Pediatrik</h3>
+                    <p class="text-sm text-gray-600 mb-4">Kuesioner Karies Gigi Pediatrik (Anak).</p>
+                    
+                    <form id="seccForm" class="space-y-3 mb-6">
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <label class="text-sm font-medium w-3/4">Konsumsi manis >3x sehari?</label>
+                            <input type="range" min="0" max="5" value="0" class="secc-input w-1/4" data-label="Diet Manis">
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <label class="text-sm font-medium w-3/4">Sikat gigi <2x sehari?</label>
+                            <input type="range" min="0" max="5" value="0" class="secc-input w-1/4" data-label="Kebersihan">
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <label class="text-sm font-medium w-3/4">Ada bercak putih/coklat di gigi?</label>
+                            <input type="range" min="0" max="5" value="0" class="secc-input w-1/4" data-label="Tanda Klinis">
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <label class="text-sm font-medium w-3/4">Pernah nyeri gigi malam hari?</label>
+                            <input type="range" min="0" max="5" value="0" class="secc-input w-1/4" data-label="Keluhan Nyeri">
+                        </div>
+                        <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                            <label class="text-sm font-medium w-3/4">Kunjungan dokter gigi jarang?</label>
+                            <input type="range" min="0" max="5" value="0" class="secc-input w-1/4" data-label="Kunjungan drg">
+                        </div>
+                        <button type="button" onclick="updateRadarChart()" class="w-full bg-pome-light text-pome-primary font-bold py-2 rounded mt-2 hover:bg-pome-secondary hover:text-white transition">Analisis Risiko</button>
+                    </form>
+                    <div class="relative h-64 w-full">
+                        <canvas id="seccRadarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Fitur 2: Peta Gigi Susu (Odontogram) -->
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 relative">
+                     <div class="absolute top-0 right-0 bg-pome-secondary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Fitur 2</div>
+                    <h3 class="text-xl font-bold text-pome-primary mb-2 border-b pb-2"><i class="fas fa-teeth mr-2"></i> Peta Gigi Susu (Odontogram)</h3>
+                    <p class="text-xs text-gray-500 mb-4">Klik gigi untuk mengubah status: Sehat (Putih) &rarr; <span class="text-red-500 font-bold">Decayed (Karies/Merah)</span> &rarr; <span class="text-gray-500 font-bold">Missing (Hilang/Abu)</span> &rarr; <span class="text-blue-500 font-bold">Filled (Tambal/Biru)</span></p>
+                    
+                    <div class="flex flex-col items-center gap-4 bg-blue-50 p-4 rounded-lg">
+                        <div class="text-sm font-bold text-gray-700">Rahang Atas (Maxilla)</div>
+                        <div class="flex gap-1 md:gap-2 justify-center" id="upperTeeth">
+                            <!-- JS akan mengisi ini 55-51, 61-65 -->
+                        </div>
+                        
+                        <div class="w-full border-t-2 border-dashed border-gray-300 my-2"></div>
+                        
+                        <div class="flex gap-1 md:gap-2 justify-center" id="lowerTeeth">
+                            <!-- JS akan mengisi ini 85-81, 71-75 -->
+                        </div>
+                        <div class="text-sm font-bold text-gray-700">Rahang Bawah (Mandibula)</div>
+                    </div>
+
+                    <div class="mt-6 bg-gray-100 p-4 rounded-lg text-center">
+                        <h4 class="font-bold text-lg mb-2">Indeks def-t Anak</h4>
+                        <div class="flex justify-around text-sm mb-2">
+                            <div>d (Decay): <span id="count-d" class="font-bold text-red-600 text-lg">0</span></div>
+                            <div>e (Extracted/Missing): <span id="count-e" class="font-bold text-gray-600 text-lg">0</span></div>
+                            <div>f (Filled): <span id="count-f" class="font-bold text-blue-600 text-lg">0</span></div>
+                        </div>
+                        <div class="text-xl font-extrabold text-pome-primary bg-pome-light py-2 rounded">
+                            Skor def-t Total: <span id="total-deft">0</span>
+                        </div>
+                        <p id="deft-status" class="text-xs mt-2 font-medium text-green-600">Risiko Rendah</p>
+                    </div>
+                </div>
+
+                <!-- Fitur 3: Kalkulator Dosis -->
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 relative">
+                    <div class="absolute top-0 right-0 bg-pome-secondary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Fitur 3</div>
+                    <h3 class="text-xl font-bold text-pome-primary mb-4 border-b pb-2"><i class="fas fa-calculator mr-2"></i> Kalkulator Dosis Pomecare</h3>
+                    <p class="text-sm text-gray-600 mb-4">Hitung kebutuhan harian berdasarkan Senyawa Aktif Buah Delima.</p>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Berat Badan Anak (kg)</label>
+                            <input type="number" id="calcWeight" placeholder="Misal: 15" class="w-full border border-gray-300 p-2 rounded focus:ring-pome-secondary focus:border-pome-secondary">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Usia (Tahun)</label>
+                            <select id="calcAge" class="w-full border border-gray-300 p-2 rounded focus:ring-pome-secondary focus:border-pome-secondary">
+                                <option value="toddler">1 - 3 Tahun</option>
+                                <option value="preschool">4 - 6 Tahun</option>
+                                <option value="school">7 - 12 Tahun</option>
+                            </select>
+                        </div>
+                        <button onclick="calculateDose()" class="w-full bg-pome-secondary text-white font-bold py-2 rounded hover:bg-pome-primary transition">Hitung Rekomendasi</button>
+                        
+                        <div id="doseResult" class="hidden mt-4 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
+                            <p class="text-sm text-gray-600 mb-1">Rekomendasi Konsumsi Harian:</p>
+                            <p class="text-2xl font-bold text-green-700" id="doseAmount">-</p>
+                            <p class="text-xs text-gray-500 mt-2">*1 strip = 5 gram fruit leather Pomecare</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fitur 4 & 5: Tracker & Timer (Satu Kolom) -->
+                <div class="space-y-6">
+                    <!-- Fitur 4: Chewing Tracker -->
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 relative">
+                         <div class="absolute top-0 right-0 bg-pome-secondary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Fitur 4</div>
+                        <h3 class="text-xl font-bold text-pome-primary mb-2 border-b pb-2 flex justify-between items-center">
+                            <span><i class="fas fa-calendar-check mr-2"></i> Tracker bersama "Nova"</span>
+                            <span class="text-2xl">🧸</span>
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-4">Tandai setiap kali si kecil konsumsi Pomecare hari ini.</p>
+                        
+                        <div class="flex justify-center gap-4 mb-4" id="trackerStamps">
+                            <div class="w-12 h-12 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-300 cursor-pointer hover:border-pink-500 hover:text-pink-200 transition" onclick="stampTracker(this)">
+                                <i class="fas fa-star text-xl"></i>
+                            </div>
+                            <div class="w-12 h-12 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-300 cursor-pointer hover:border-pink-500 hover:text-pink-200 transition" onclick="stampTracker(this)">
+                                <i class="fas fa-star text-xl"></i>
+                            </div>
+                            <div class="w-12 h-12 rounded-full border-2 border-dashed border-gray-400 flex items-center justify-center text-gray-300 cursor-pointer hover:border-pink-500 hover:text-pink-200 transition" onclick="stampTracker(this)">
+                                <i class="fas fa-star text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-center text-xs text-pink-600 font-medium" id="trackerMsg">Yuk kumpulkan 3 bintang hari ini!</p>
+                    </div>
+
+                    <!-- Fitur 5: Denta Brush Timer -->
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 relative bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <div class="absolute top-0 right-0 bg-pome-secondary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Fitur 5</div>
+                        <h3 class="text-xl font-bold text-blue-800 mb-2 border-b border-blue-200 pb-2"><i class="fas fa-stopwatch mr-2"></i> Denta Brush Timer</h3>
+                        <p class="text-sm text-gray-600 mb-4">Waktu sikat gigi ideal (2 Menit) dengan indikator bip.</p>
+                        
+                        <div class="text-center">
+                            <div class="text-5xl font-mono font-bold text-blue-600 mb-4" id="timerDisplay">02:00</div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                              <div class="bg-blue-600 h-2.5 rounded-full" id="timerProgress" style="width: 100%"></div>
+                            </div>
+                            <div class="flex justify-center gap-2">
+                                <button onclick="startTimer()" id="btnStartTimer" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow"><i class="fas fa-play"></i> Mulai</button>
+                                <button onclick="resetTimer()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded shadow"><i class="fas fa-redo"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fitur 6: Lab Simulator -->
+                <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 relative col-span-1 lg:col-span-2">
+                    <div class="absolute top-0 right-0 bg-pome-secondary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Fitur 6</div>
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h3 class="text-xl font-bold text-pome-primary"><i class="fas fa-microscope mr-2"></i> Lab Simulator: Ekstrak Delima vs Biofilm</h3>
+                        <div class="flex gap-2">
+                            <button onclick="initSimulator()" class="text-xs bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded">Reset</button>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">Petunjuk: Gerakkan mouse/sentuh area hitam untuk melepaskan <span class="text-red-500 font-bold">Senyawa Aktif Delima</span>. Hancurkan <span class="text-green-500 font-bold">Bakteri S. mutans (Hijau)</span>!</p>
+                    
+                    <div class="w-full flex justify-center bg-gray-100 p-2 rounded-lg">
+                        <canvas id="labCanvas" width="600" height="300" class="max-w-full h-auto touch-none"></canvas>
+                    </div>
+                    <div class="mt-2 text-center text-sm font-bold text-pome-primary">
+                        Bakteri Tersisa: <span id="bacteriaCount">0</span>
+                    </div>
+                </div>
+
+                <!-- Fitur 7: Pome-Vision AI (Deteksi Karies Gigi Anak) (FITUR BARU) -->
+                <div class="bg-gradient-to-br from-indigo-50 to-purple-100 p-6 md:p-8 rounded-xl shadow-lg border border-purple-200 relative col-span-1 lg:col-span-2 overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-pome-primary text-white text-xs font-bold px-3 py-1 rounded-bl-lg shadow-md">Fitur 7</div>
+                    <div class="md:flex items-stretch gap-8">
+                        <div class="md:w-1/2 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-2xl font-bold text-pome-primary mb-2"><i class="fas fa-camera mr-2"></i> Pome-Vision AI</h3>
+                                <p class="text-gray-700 mb-6 text-sm">Deteksi dini kesehatan gigi pediatrik (karies, plak, atau demineralisasi) secara mandiri. Cukup unggah foto gigi anak Anda untuk dianalisis oleh Kecerdasan Buatan.</p>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-center w-full">
+                                        <label for="visionUpload" class="flex flex-col items-center justify-center w-full h-48 border-2 border-pome-secondary border-dashed rounded-lg cursor-pointer bg-white hover:bg-purple-50 transition-colors">
+                                            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4" id="uploadPlaceholder">
+                                                <i class="fas fa-cloud-upload-alt text-4xl text-pome-secondary mb-3"></i>
+                                                <p class="mb-2 text-sm text-gray-700 font-semibold">Pilih Foto atau Ambil Gambar</p>
+                                                <p class="text-xs text-gray-500">Mendukung JPEG, PNG, atau Kamera Langsung</p>
+                                            </div>
+                                            <img id="visionPreview" class="hidden w-full h-full object-contain rounded-lg p-2" alt="Preview Gigi Anak" />
+                                            <input id="visionUpload" type="file" accept="image/*" class="hidden" onchange="previewVisionImage(this)" />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <button id="btnAnalyzeVision" onclick="analyzeVision()" disabled class="w-full bg-gray-300 text-gray-500 font-bold py-3 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 transition shadow">
+                                    <i class="fas fa-magic"></i> Mulai Analisis Gigi Anak
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="md:w-1/2 mt-6 md:mt-0 flex flex-col justify-between">
+                            <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-pome-secondary h-full flex flex-col justify-between min-h-[300px]">
+                                <div id="visionDefaultResult" class="text-center my-auto">
+                                    <div class="text-5xl text-pome-light mb-4"><i class="fas fa-teeth-open"></i></div>
+                                    <p class="text-gray-500 text-sm">Belum ada gambar yang dianalisis. Unggah foto gigi anak untuk melihat hasil penilaian AI dan rekomendasi khusus Pomecare.</p>
+                                </div>
+                                
+                                <div id="visionLoading" class="hidden text-center my-auto">
+                                    <div class="animate-spin text-5xl text-pome-secondary mb-4 mx-auto"><i class="fas fa-spinner"></i></div>
+                                    <p class="text-pome-primary font-bold text-sm">Menghubungkan ke Gemini AI...</p>
+                                    <p class="text-gray-500 text-xs mt-1">Menganalisis indikasi klinis kesehatan gigi...</p>
+                                </div>
+
+                                <div id="visionResultContainer" class="hidden flex-grow overflow-y-auto max-h-[350px] pr-2">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <span class="bg-purple-100 text-pome-primary text-xs font-extrabold px-3 py-1 rounded-full"><i class="fas fa-robot mr-1"></i> Gemini AI Analysis</span>
+                                    </div>
+                                    <div id="visionAiText" class="text-sm text-gray-700 leading-relaxed text-left space-y-2">
+                                        <!-- Hasil analisis masuk ke sini -->
+                                    </div>
+                                </div>
+
+                                <div id="visionDisclaimer" class="hidden mt-4 pt-3 border-t text-[10px] text-gray-400 leading-normal">
+                                    *Peringatan: Analisis ini didasarkan pada visual AI dan bukan merupakan diagnosis medis formal. Selalu konsultasikan kesehatan gigi anak Anda ke dokter gigi (drg) secara berkala.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==================== EDUKASI & JURNAL TAB ==================== -->
+        <section id="education" class="tab-content">
+            
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Fitur 8: Portal Edukasi Medis -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white p-8 rounded-xl shadow-md border border-gray-100 relative">
+                        <div class="absolute top-0 right-0 bg-pome-secondary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Fitur 8</div>
+                        <h3 class="text-xl font-bold text-blue-800 mb-2 border-b border-blue-200 pb-2"><i class="fas fa-stopwatch mr-2"></i> Denta Brush Timer</h3>
+                        <p class="text-sm text-gray-600 mb-4">Waktu sikat gigi ideal (2 Menit) dengan indikator suara bip.</p>
+                        
+                        <div class="text-center">
+                            <div class="text-5xl font-mono font-bold text-blue-600 mb-4" id="timerDisplay">02:00</div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                              <div class="bg-blue-600 h-2.5 rounded-full" id="timerProgress" style="width: 100%"></div>
+                            </div>
+                            <div class="flex justify-center gap-2">
+                                <button onclick="startTimer()" id="btnStartTimer" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow"><i class="fas fa-play"></i> Mulai</button>
+                                <button onclick="resetTimer()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded shadow"><i class="fas fa-redo"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fitur 9: Jurnal Gigi -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100 h-full flex flex-col relative">
+                        <div class="absolute top-0 right-0 bg-pome-secondary text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Fitur 9</div>
+                        <h2 class="text-xl font-bold text-pome-primary mb-4 border-b pb-2"><i class="fas fa-book-open mr-2"></i> Jurnal Gigi (Bebas Alert)</h2>
+                        <p class="text-sm text-gray-600 mb-4">Catat keluhan lokal anak tanpa gangguan popup.</p>
+                        
+                        <div class="flex-grow flex flex-col space-y-3">
+                            <input type="date" id="journalDate" class="border border-gray-300 p-2 rounded w-full">
+                            <textarea id="journalText" rows="4" placeholder="Contoh: Malam ini anak mengeluh gigi geraham kiri bawah ngilu saat minum air dingin..." class="border border-gray-300 p-2 rounded w-full resize-none focus:ring-pome-secondary focus:border-pome-secondary"></textarea>
+                            <button onclick="saveJournal()" class="bg-pome-primary hover:bg-pome-secondary text-white font-bold py-2 rounded transition">Simpan Catatan</button>
+                            
+                            <!-- Custom Message Box pengganti Alert -->
+                            <div id="journalMsg" class="hidden text-sm p-2 rounded text-center font-bold transition-all duration-300"></div>
+
+                            <div class="mt-4 border-t pt-4 flex-grow">
+                                <h4 class="font-bold text-gray-700 mb-2 text-sm">Riwayat Terkini:</h4>
+                                <ul id="journalHistory" class="space-y-2 text-sm text-gray-600 overflow-y-auto max-h-48 pr-2">
+                                    <li class="italic text-gray-400">Belum ada catatan.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PRE-ORDER TAB ==================== -->
+        <section id="preorder" class="tab-content">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden max-w-4xl mx-auto">
+                <div class="md:flex">
+                    <!-- Sisi Kiri: Visualisasi Produk -->
+                    <div class="md:w-1/2 bg-gradient-to-br from-pome-light to-pink-100 p-8 flex flex-col items-center justify-center text-center">
+                        <div class="relative w-64 h-64 mb-6">
+                            <!-- Visualisasi DENTANOVA.png (Placeholder) -->
+                            <img src="https://placehold.co/400x400/9333ea/ffffff?text=DENTANOVA.png\n(Kemasan+Pomecare)" alt="Produk Pomecare DENTANOVA" class="w-full h-full object-cover rounded-xl shadow-2xl border-4 border-white transform rotate-3 hover:rotate-0 transition duration-500">
+                            <div class="absolute -bottom-4 -right-4 bg-pink-500 text-white font-bold py-2 px-4 rounded-full shadow-lg transform -rotate-12">
+                                Inovasi Baru!
+                            </div>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-pome-primary mb-2">POMECARE</h2>
+                        <h3 class="text-lg font-bold text-pink-600 mb-4">Varian: DENTANOVA</h3>
+                        <p class="text-gray-700 text-sm">Fortified Fruit Leather Delima dengan Senyawa Aktif Antibakteri. Enak, sehat, pelindung gigi!</p>
+                        
+                        <div class="mt-6 flex space-x-4">
+                            <span class="bg-white text-pome-primary px-3 py-1 rounded-full text-xs font-bold border border-pome-light">Bebas Gula Tambahan</span>
+                            <span class="bg-white text-pome-primary px-3 py-1 rounded-full text-xs font-bold border border-pome-light">100% Alami</span>
+                        </div>
+                    </div>
+
+                    <!-- Sisi Kanan: Form Pre-order -->
+                    <div class="md:w-1/2 p-8 bg-white">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Formulir Pre-Order Batch</h2>
+                        <p class="text-sm text-gray-500 mb-6 italic">Sistem bebas harga (Pay as you wish / Subsidi silang untuk riset pengembangan).</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Nama Orang Tua</label>
+                                <input type="text" id="poName" placeholder="Nama Lengkap" class="mt-1 w-full border border-gray-300 p-2 rounded focus:ring-pink-500 focus:border-pink-500">
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-1/2">
+                                    <label class="block text-sm font-medium text-gray-700">Jumlah Batch (Box)</label>
+                                    <input type="number" id="poQty" value="1" min="1" class="mt-1 w-full border border-gray-300 p-2 rounded focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                                <div class="w-1/2">
+                                    <label class="block text-sm font-medium text-gray-700">Kota Pengiriman</label>
+                                    <input type="text" id="poCity" placeholder="Kota" class="mt-1 w-full border border-gray-300 p-2 rounded focus:ring-pink-500 focus:border-pink-500">
+                                </div>
+                            </div>
+                            
+                            <div class="pt-4 mt-6 border-t border-gray-200">
+                                <p class="text-sm font-bold text-gray-700 mb-3">Kirim Pesanan Melalui:</p>
+                                <div class="flex flex-col gap-3">
+                                    <button onclick="sendWhatsApp()" class="w-full flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg shadow transition">
+                                        <i class="fab fa-whatsapp text-xl mr-2"></i> Pesan via WhatsApp (081331965094)
+                                    </button>
+                                    <a href="https://instagram.com/arhanumch" target="_blank" class="w-full flex items-center justify-center bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:opacity-90 text-white font-bold py-3 px-4 rounded-lg shadow transition">
+                                        <i class="fab fa-instagram text-xl mr-2"></i> DM Instagram (@arhanumch)
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Modal Message Box -->
+    <div id="customModal" class="modal-box">
+        <div class="modal-content">
+            <div id="modalIcon" class="text-4xl mb-4"></div>
+            <h3 id="modalTitle" class="text-xl font-bold mb-2 text-gray-800"></h3>
+            <p id="modalMessage" class="text-gray-600 mb-6"></p>
+            <button onclick="closeModal()" class="bg-pome-primary text-white px-6 py-2 rounded font-bold hover:bg-pome-secondary w-full">Tutup</button>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-gray-300 py-8 text-center mt-12">
+        <p>&copy; 2026 Pomecare Platform. Inovasi Hifdzun Nafs Pencegahan Karies Pediatrik.</p>
+        <p class="text-sm mt-2 opacity-50">Demo Version.</p>
+    </footer>
+
+    <script>
+        // --- 1. Tab Navigation Logic ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            window.scrollTo(0, 0);
+            
+            // Re-render chart jika tab features dibuka agar animasi jalan
+            if(tabId === 'features' && radarChartInstance) {
+                radarChartInstance.update();
+                // Init ulang canvas jika belum jalan
+                if(!animationId) initSimulator();
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        document.getElementById('mobileMenuBtn').addEventListener('click', toggleMobileMenu);
+
+        // --- Custom Modal (Pengganti Alert) ---
+        function showModal(title, message, type = 'info') {
+            const modal = document.getElementById('customModal');
+            const mTitle = document.getElementById('modalTitle');
+            const mMsg = document.getElementById('modalMessage');
+            const mIcon = document.getElementById('modalIcon');
+
+            mTitle.innerText = title;
+            mMsg.innerText = message;
+            
+            if(type === 'success') {
+                mIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+            } else if (type === 'warning') {
+                mIcon.innerHTML = '<i class="fas fa-exclamation-triangle text-yellow-500"></i>';
+            } else {
+                mIcon.innerHTML = '<i class="fas fa-info-circle text-blue-500"></i>';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').style.display = 'none';
+        }
+
+        // --- 2. Fitur 1: Skrining S-ECC (Radar Chart) ---
+        let radarChartInstance = null;
+        const ctxRadar = document.getElementById('seccRadarChart').getContext('2d');
+        
+        function initRadarChart() {
+            const data = {
+                labels: ['Diet Manis', 'Kebersihan Buruk', 'Tanda Klinis', 'Keluhan Nyeri', 'Jarang ke drg'],
+                datasets: [{
+                    label: 'Profil Risiko Karies',
+                    data: [0, 0, 0, 0, 0],
+                    fill: true,
+                    backgroundColor: 'rgba(147, 51, 234, 0.2)',
+                    borderColor: 'rgba(147, 51, 234, 1)',
+                    pointBackgroundColor: 'rgba(107, 33, 168, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(107, 33, 168, 1)'
+                }]
+            };
+
+            const config = {
+                type: 'radar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { display: false },
+                            suggestedMin: 0,
+                            suggestedMax: 5,
+                            ticks: { stepSize: 1, display: false }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            };
+            radarChartInstance = new Chart(ctxRadar, config);
+        }
+
+        function updateRadarChart() {
+            const inputs = document.querySelectorAll('.secc-input');
+            const newData = Array.from(inputs).map(input => parseInt(input.value));
+            
+            radarChartInstance.data.datasets[0].data = newData;
+            radarChartInstance.update();
+
+            const totalScore = newData.reduce((a, b) => a + b, 0);
+            let risk = "Rendah";
+            if(totalScore > 15) risk = "Tinggi (Butuh Pomecare Segera!)";
+            else if(totalScore > 8) risk = "Sedang (Gunakan Pomecare Pencegahan)";
+            
+            showModal("Hasil Analisis", `Total Skor Risiko: ${totalScore}/25.\nTingkat Risiko: ${risk}`, totalScore > 15 ? 'warning' : 'info');
+        }
+
+        // Update chart real-time saat slider digeser
+        document.querySelectorAll('.secc-input').forEach(input => {
+            input.addEventListener('input', () => {
+                const index = Array.from(document.querySelectorAll('.secc-input')).indexOf(input);
+                radarChartInstance.data.datasets[0].data[index] = parseInt(input.value);
+                radarChartInstance.update();
+            });
+        });
+
+        // --- 3. Fitur 7: Odontogram ---
+        const toothStates = ['healthy', 'decayed', 'missing', 'filled'];
+        const teethData = {};
+
+        function createTeethSet(ids, containerId) {
+            const container = document.getElementById(containerId);
+            ids.forEach(id => {
+                teethData[id] = 0; // index of toothStates
+                const btn = document.createElement('div');
+                btn.className = 'tooth-btn tooth-healthy text-xs md:text-sm';
+                btn.innerText = id;
+                btn.onclick = () => toggleToothState(id, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function toggleToothState(id, el) {
+            // Cycle through states
+            teethData[id] = (teethData[id] + 1) % toothStates.length;
+            const newState = toothStates[teethData[id]];
+            
+            // Remove old classes, add new
+            el.className = `tooth-btn tooth-${newState} text-xs md:text-sm`;
+            updateDeftScore();
+        }
+
+        function updateDeftScore() {
+            let d = 0, e = 0, f = 0;
+            Object.values(teethData).forEach(stateIdx => {
+                if(stateIdx === 1) d++; // decayed
+                else if(stateIdx === 2) e++; // missing/extracted
+                else if(stateIdx === 3) f++; // filled
+            });
+            
+            document.getElementById('count-d').innerText = d;
+            document.getElementById('count-e').innerText = e;
+            document.getElementById('count-f').innerText = f;
+            
+            const total = d + e + f;
+            document.getElementById('total-deft').innerText = total;
+
+            const statusEl = document.getElementById('deft-status');
+            if(total === 0) {
+                statusEl.innerText = "Sangat Baik (Bebas Karies)";
+                statusEl.className = "text-xs mt-2 font-bold text-green-600";
+            } else if (total <= 3) {
+                statusEl.innerText = "Risiko Sedang";
+                statusEl.className = "text-xs mt-2 font-bold text-yellow-600";
+            } else {
+                statusEl.innerText = "Karies Gigi Pediatrik (Anak) Parah";
+                statusEl.className = "text-xs mt-2 font-bold text-red-600";
+            }
+        }
+
+        // Init Gigi Susu: Kanan atas ke kiri atas, kiri bawah ke kanan bawah
+        createTeethSet([55,54,53,52,51, 61,62,63,64,65], 'upperTeeth');
+        createTeethSet([85,84,83,82,81, 71,72,73,74,75], 'lowerTeeth');
+
+
+        // --- 4. Fitur 4: Lab Simulator (Canvas) ---
+        const canvas = document.getElementById('labCanvas');
+        const ctx = canvas.getContext('2d');
+        let bacteria = [];
+        let particles = [];
+        let animationId;
+        const maxBacteria = 40;
+
+        class Bacterium {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.radius = 8 + Math.random() * 6;
+                this.vx = (Math.random() - 0.5) * 1.5;
+                this.vy = (Math.random() - 0.5) * 1.5;
+                this.color = '#22c55e'; // Green (S.mutans)
+                this.health = 100;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(34, 197, 94, ${this.health/100})`; // Fade saat mati
+                ctx.fill();
+                ctx.closePath();
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+        }
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.radius = 3;
+                this.vx = (Math.random() - 0.5) * 6;
+                this.vy = (Math.random() - 0.5) * 6;
+                this.life = 100;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(239, 68, 68, ${this.life/100})`; // Merah Delima
+                ctx.fill();
+                ctx.closePath();
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                this.life -= 2;
+            }
+        }
+
+        function initSimulator() {
+            cancelAnimationFrame(animationId);
+            bacteria = [];
+            particles = [];
+            for(let i=0; i<maxBacteria; i++) bacteria.push(new Bacterium());
+            updateBacteriaCount();
+            animateSimulator();
+        }
+
+        function spawnParticles(x, y) {
+            for(let i=0; i<5; i++) particles.push(new Particle(x, y));
+        }
+
+        function handleInteraction(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            let x, y;
+            if (e.touches && e.touches.length > 0) {
+                x = e.touches[0].clientX - rect.left;
+                y = e.touches[0].clientY - rect.top;
+            } else {
+                x = e.clientX - rect.left;
+                y = e.clientY - rect.top;
+            }
+            spawnParticles(x, y);
+        }
+
+        canvas.addEventListener('mousemove', handleInteraction);
+        canvas.addEventListener('touchmove', handleInteraction, {passive: false});
+
+        function animateSimulator() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Gambar Background Plak samar
+            ctx.fillStyle = 'rgba(254, 252, 232, 0.1)';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+
+            // Update & Draw Bacteria
+            for(let i = bacteria.length - 1; i >= 0; i--) {
+                let b = bacteria[i];
+                b.update();
+                b.draw();
+                
+                // Cek tabrakan dengan partikel
+                for(let j = particles.length - 1; j >= 0; j--) {
+                    let p = particles[j];
+                    let dx = b.x - p.x;
+                    let dy = b.y - p.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if(dist < b.radius + p.radius) {
+                        b.health -= 25; // Delima damage
+                        particles.splice(j, 1);
+                        if(b.health <= 0) {
+                            bacteria.splice(i, 1);
+                            updateBacteriaCount();
+                            break; 
+                        }
+                    }
+                }
+            }
+
+            // Update & Draw Particles
+            for(let j = particles.length - 1; j >= 0; j--) {
+                particles[j].update();
+                particles[j].draw();
+                if(particles[j].life <= 0) particles.splice(j, 1);
+            }
+
+            animationId = requestAnimationFrame(animateSimulator);
+        }
+
+        function updateBacteriaCount() {
+            const countEl = document.getElementById('bacteriaCount');
+            countEl.innerText = bacteria.length;
+            if(bacteria.length === 0) {
+                countEl.innerHTML = "<span class='text-green-500'>Bersih! Biofilm Hancur.</span>";
+            }
+        }
+
+
+        // --- 5. Fitur 2: Kalkulator Dosis ---
+        function calculateDose() {
+            const weight = parseFloat(document.getElementById('calcWeight').value);
+            const ageGroup = document.getElementById('calcAge').value;
+            const resultBox = document.getElementById('doseResult');
+            const amountText = document.getElementById('doseAmount');
+
+            if(isNaN(weight) || weight <= 0) {
+                showModal("Input Tidak Valid", "Masukkan berat badan anak yang benar (angka).", "warning");
+                return;
+            }
+
+            // Logika fiktif sederhana berdasarkan Senyawa Aktif Delima
+            let baseStrip = 1;
+            if(weight > 20) baseStrip = 2;
+            if(weight > 30) baseStrip = 3;
+            
+            if(ageGroup === 'preschool') baseStrip += 0.5;
+            if(ageGroup === 'school') baseStrip += 1;
+
+            const finalDose = Math.round(baseStrip);
+            
+            amountText.innerText = `${finalDose} Strip / Hari`;
+            resultBox.classList.remove('hidden');
+        }
+
+
+        // --- 6. Fitur 3: Chewing Tracker ---
+        let stamps = 0;
+// ... existing code ... -->
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 120;
+            updateTimerUI();
+            resetTimerUI();
+        }
+
+
+        // --- 10. Fitur 7: Pome-Vision AI (Deteksi Karies Gigi Anak) ---
+        let selectedBase64Image = null;
+
+        function previewVisionImage(input) {
+            const preview = document.getElementById('visionPreview');
+            const placeholder = document.getElementById('uploadPlaceholder');
+            const btn = document.getElementById('btnAnalyzeVision');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    
+                    // Simpan data base64
+                    selectedBase64Image = e.target.result.split(',')[1];
+                    
+                    // Aktifkan button
+                    btn.disabled = false;
+                    btn.className = "w-full bg-pome-secondary hover:bg-pome-primary text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition shadow transform hover:scale-[1.02]";
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function analyzeVision() {
+            if (!selectedBase64Image) return;
+
+            const defaultResult = document.getElementById('visionDefaultResult');
+            const loading = document.getElementById('visionLoading');
+            const resultContainer = document.getElementById('visionResultContainer');
+            const aiText = document.getElementById('visionAiText');
+            const disclaimer = document.getElementById('visionDisclaimer');
+            const btn = document.getElementById('btnAnalyzeVision');
+
+            // Set UI ke loading state
+            defaultResult.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            loading.classList.remove('hidden');
+            disclaimer.classList.add('hidden');
+            btn.disabled = true;
+
+            const systemPrompt = "Anda adalah dokter gigi spesialis anak (pedodontis) yang ramah dan bijaksana. Analisis gambar gigi anak ini untuk mendeteksi tanda-tanda kemungkinan karies gigi pediatrik (seperti bercak putih demineralisasi, bintik hitam, karies aktif, plak, atau radang gusi). Berikan penilaian tingkat risiko (Rendah, Sedang, Tinggi), saran penanganan preventif mandiri, serta sebutkan manfaat dari konsumsi pangan fungsional dengan ekstrak buah delima yang kaya zat aktif penangkal bakteri Streptococcus mutans (Pomecare). Jawablah dalam bahasa Indonesia dengan struktur yang sangat rapi, mudah dibaca oleh orang tua, berikan empati tinggi, serta gunakan poin-poin yang tajam dan ringkas.";
+            const userQuery = "Lakukan evaluasi klinis awal visual pada gambar gigi anak ini. Jelaskan kemungkinan adanya karies gigi pediatrik, tingkat keparahan kasat mata, langkah pencegahan, serta kontribusi antibakteri ekstrak delima (Pomecare).";
+            
+            const apiKey = ""; // Dikelola otomatis oleh runtime Canvas jika kosong
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: userQuery },
+                            {
+                                inlineData: {
+                                    mimeType: "image/jpeg",
+                                    data: selectedBase64Image
+                                }
+                            }
+                        ]
+                    }
+                ],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            // Melakukan pemanggilan fetch dengan exponential backoff sederhana
+            let retries = 3;
+            let delay = 1000;
+            let success = false;
+            let responseData;
+
+            while (retries > 0 && !success) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        responseData = await response.json();
+                        success = true;
+                    } else {
+                        throw new Error(`API Error: ${response.status}`);
+                    }
+                } catch (error) {
+                    retries--;
+                    if (retries === 0) {
+                        console.error("Gagal melakukan analisis gambar gigi setelah beberapa kali mencoba.", error);
+                        loading.classList.add('hidden');
+                        defaultResult.classList.remove('hidden');
+                        btn.disabled = false;
+                        showModal("Gagal Menghubungkan AI", "Terjadi gangguan saat menghubungi Gemini AI. Silakan coba kembali beberapa saat lagi.", "warning");
+                        return;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2; // Exponential backoff
+                }
+            }
+
+            // Memproses respon model
+            const candidate = responseData.candidates?.[0];
+            if (candidate && candidate.content?.parts?.[0]?.text) {
+                const rawMarkdown = candidate.content.parts[0].text;
+                
+                // Format markdown dasar secara manual untuk visualisasi yang rapi
+                const htmlFormatted = rawMarkdown
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/^\s*-\s+(.*?)$/gm, '<li class="ml-4 list-disc">$1</li>')
+                    .replace(/\n/g, '<br/>');
+
+                aiText.innerHTML = htmlFormatted;
+                
+                // Tampilkan hasil
+                loading.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+                disclaimer.classList.remove('hidden');
+                
+                // Kembalikan tombol ke keadaan aktif
+                btn.disabled = false;
+            } else {
+                loading.classList.add('hidden');
+                defaultResult.classList.remove('hidden');
+                btn.disabled = false;
+                showModal("Hasil Kosong", "Gagal mendapatkan analisis yang valid dari server AI. Silakan ganti foto dan coba lagi.", "warning");
+            }
+        }
+
+
+        // Initialize on load
+        window.onload = function() {
+            document.getElementById('journalDate').valueAsDate = new Date();
+            initRadarChart();
+        };
+
+    </script>
+</body>
+</html>
